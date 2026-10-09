@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center gap-2 mb-6">
+    <a href="/" class="text-blue-600 text-sm">← Back</a>
+    <h1 class="text-xl font-bold text-gray-800">{{ "Edit Member" if member else "Add Family Member" }}</h1>
+</div>
+<form method="POST" action="{{ action }}" class="space-y-4">
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h2 class="font-semibold text-gray-700">Personal Information</h2>
+        <div>
+            <label class="text-sm text-gray-600">Full Name</label>
+            <input name="name" type="text" required value="{{ member.name if member else '' }}"
+                class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">Age</label>
+                <input name="age" type="number" required min="16" max="100" value="{{ member.age if member else '' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Gender</label>
+                <select name="gender" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="Female" {{ 'selected' if member and member.gender == 'Female' }}>Female</option>
+                    <option value="Male" {{ 'selected' if member and member.gender == 'Male' }}>Male</option>
+                    <option value="Non-binary" {{ 'selected' if member and member.gender == 'Non-binary' }}>Non-binary</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label class="text-sm text-gray-600">Marital Status</label>
+            <select name="marital_status" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="Single" {{ 'selected' if member and member.marital_status == 'Single' }}>Single</option>
+                <option value="Married" {{ 'selected' if member and member.marital_status == 'Married' }}>Married</option>
+                <option value="Divorced" {{ 'selected' if member and member.marital_status == 'Divorced' }}>Divorced</option>
+            </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">City</label>
+                <input name="city" type="text" required value="{{ member.city if member else 'Heber City' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">ZIP Code</label>
+                <input name="zip_code" type="text" required value="{{ member.zip_code if member else '84032' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h2 class="font-semibold text-gray-700">Driving History</h2>
+        <div>
+            <label class="text-sm text-gray-600">Years Licensed</label>
+            <input name="license_years" type="number" min="0" value="{{ member.license_years if member else '1' }}"
+                class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">Accidents (5yr)</label>
+                <input name="accidents" type="number" min="0" value="{{ member.accidents if member else '0' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Violations (5yr)</label>
+                <input name="violations" type="number" min="0" value="{{ member.violations if member else '0' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h2 class="font-semibold text-gray-700">Coverage Preferences</h2>
+        <div>
+            <label class="text-sm text-gray-600">Coverage Type</label>
+            <select name="coverage_type" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="full" {{ 'selected' if not member or member.coverage_type == 'full' }}>Full Coverage</option>
+                <option value="liability" {{ 'selected' if member and member.coverage_type == 'liability' }}>Liability Only</option>
+            </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">Deductible ($)</label>
+                <input name="deductible" type="number" value="{{ member.deductible if member else '500' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Liability Limit</label>
+                <select name="liability_limit" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="50/100/50">50/100/50</option>
+                    <option value="100/300/100" {{ 'selected' if not member or member.liability_limit == '100/300/100' }}>100/300/100</option>
+                    <option value="250/500/250">250/500/250</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">
+        {{ "Save Changes" if member else "Add Member" }}
+    </button>
+</form>
+{% endblock %}

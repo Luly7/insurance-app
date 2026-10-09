@@ -1,0 +1,9 @@
+.env
+*.db
+__pycache__/
+*.pyc
+venv/
+venv_insurance/
+app.log
+nohup.out
+*.log

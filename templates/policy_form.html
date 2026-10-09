@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center gap-2 mb-6">
+    <a href="/policies" class="text-blue-600 text-sm">← Back</a>
+    <h1 class="text-xl font-bold text-gray-800">{{ "Edit policy" if policy else "Add policy" }}</h1>
+</div>
+<form method="POST" action="{{ action }}" class="space-y-4">
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h2 class="font-semibold text-gray-700">Policy</h2>
+        <div>
+            <label class="text-sm text-gray-600">Family member</label>
+            <select name="member_id" required class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+                {% for member in members %}
+                <option value="{{ member.id }}" {% if (policy and policy.member_id == member.id) or (selected_member_id == member.id) %}selected{% endif %}>{{ member.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">Type</label>
+                <select name="policy_type" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+                    {% for t in policy_types %}
+                    <option value="{{ t }}" {% if policy and policy.policy_type == t %}selected{% endif %}>{{ t|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Status</label>
+                <select name="status" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+                    {% for s in statuses %}
+                    <option value="{{ s }}" {% if policy and policy.status == s %}selected{% endif %}>{{ s|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div>
+            <label class="text-sm text-gray-600">Carrier / company</label>
+            <input name="carrier" type="text" required value="{{ policy.carrier if policy else '' }}"
+                placeholder="State Farm, GEICO, Bear River Mutual…"
+                class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+        </div>
+        <div>
+            <label class="text-sm text-gray-600">Policy number</label>
+            <input name="policy_number" type="text" value="{{ policy.policy_number if policy else '' }}"
+                class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+        </div>
+        <div>
+            <label class="text-sm text-gray-600">Linked vehicle (auto policies)</label>
+            <select name="vehicle_id" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+                <option value="">None</option>
+                {% for v in vehicles %}
+                <option value="{{ v.id }}" {% if policy and policy.vehicle_id == v.id %}selected{% endif %}>
+                    {{ v.year }} {{ v.make }} {{ v.model }} ({{ v.owner.name if v.owner else '' }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h2 class="font-semibold text-gray-700">Cost and dates</h2>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">Effective date</label>
+                <input name="effective_date" type="date" value="{{ policy.effective_date if policy else '' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Expiration date</label>
+                <input name="expiration_date" type="date" value="{{ policy.expiration_date if policy else '' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">Premium amount ($)</label>
+                <input name="premium_amount" type="number" min="0" value="{{ policy.premium_amount if policy else 0 }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Billing</label>
+                <select name="billing_cycle" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+                    <option value="monthly" {% if not policy or policy.billing_cycle == 'monthly' %}selected{% endif %}>Monthly</option>
+                    <option value="annual" {% if policy and policy.billing_cycle == 'annual' %}selected{% endif %}>Annual</option>
+                    <option value="six_month" {% if policy and policy.billing_cycle == 'six_month' %}selected{% endif %}>6-month</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">Deductible ($)</label>
+                <input name="deductible" type="number" min="0" value="{{ policy.deductible if policy else 500 }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Liability limit</label>
+                <input name="liability_limit" type="text" value="{{ policy.liability_limit if policy else '100/300/100' }}"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h2 class="font-semibold text-gray-700">Coverage lines</h2>
+        <p class="text-xs text-gray-400">Leave a name blank to skip that row.</p>
+        {% set rows = policy.coverages if policy and policy.coverages else [] %}
+        {% for i in range(6) %}
+        {% set cov = rows[i] if i < rows|length else None %}
+        <div class="grid grid-cols-3 gap-2">
+            <input name="coverage_names" placeholder="Coverage name" value="{{ cov.name if cov else '' }}"
+                class="border rounded-lg px-2 py-2 text-sm">
+            <input name="coverage_limits" placeholder="Limit" value="{{ cov.limit_amount if cov else '' }}"
+                class="border rounded-lg px-2 py-2 text-sm">
+            <input name="coverage_deductibles" placeholder="Deductible" value="{{ cov.deductible if cov else '' }}"
+                class="border rounded-lg px-2 py-2 text-sm">
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h2 class="font-semibold text-gray-700">Agent / notes</h2>
+        <input name="agent_name" placeholder="Agent name" value="{{ policy.agent_name if policy else '' }}"
+            class="w-full border rounded-lg px-3 py-2 text-sm">
+        <input name="agent_phone" placeholder="Agent phone" value="{{ policy.agent_phone if policy else '' }}"
+            class="w-full border rounded-lg px-3 py-2 text-sm">
+        <input name="agent_email" placeholder="Agent email" value="{{ policy.agent_email if policy else '' }}"
+            class="w-full border rounded-lg px-3 py-2 text-sm">
+        <textarea name="notes" rows="3" placeholder="Notes" class="w-full border rounded-lg px-3 py-2 text-sm">{{ policy.notes if policy else '' }}</textarea>
+    </div>
+
+    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">
+        {{ "Save policy" if policy else "Add to database" }}
+    </button>
+</form>
+{% endblock %}

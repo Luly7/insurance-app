@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center gap-2 mb-4">
+    <a href="/policies" class="text-blue-600 text-sm">← Policies</a>
+</div>
+
+<div class="bg-white rounded-xl shadow p-4 mb-4">
+    <div class="flex justify-between items-start">
+        <div>
+            <p class="text-xs uppercase tracking-wide text-blue-600 font-semibold">{{ policy.policy_type }}</p>
+            <h1 class="text-xl font-bold text-gray-800">{{ policy.carrier }}</h1>
+            <p class="text-gray-500 text-sm capitalize">{{ policy.status }}
+                {% if policy.policy_number %} · #{{ policy.policy_number }}{% endif %}
+            </p>
+            {% if policy.member %}
+            <a href="/profiles/{{ policy.member.id }}" class="text-blue-600 text-sm">{{ policy.member.name }}</a>
+            {% endif %}
+            {% if policy.vehicle %}
+            <p class="text-gray-500 text-sm">{{ policy.vehicle.year }} {{ policy.vehicle.make }} {{ policy.vehicle.model }}</p>
+            {% endif %}
+        </div>
+        <a href="/policies/{{ policy.id }}/edit" class="text-blue-600 text-sm font-medium">Edit</a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow p-4 mb-4 grid grid-cols-2 gap-3 text-sm">
+    <div>
+        <p class="text-gray-400 text-xs">Effective</p>
+        <p class="text-gray-800">{{ policy.effective_date or "—" }}</p>
+    </div>
+    <div>
+        <p class="text-gray-400 text-xs">Expires</p>
+        <p class="text-gray-800">{{ policy.expiration_date or "—" }}</p>
+    </div>
+    <div>
+        <p class="text-gray-400 text-xs">Premium</p>
+        <p class="text-gray-800">{% if policy.premium_amount %}${{ policy.premium_amount }} {{ policy.billing_cycle }}{% else %}—{% endif %}</p>
+    </div>
+    <div>
+        <p class="text-gray-400 text-xs">Deductible</p>
+        <p class="text-gray-800">${{ policy.deductible }}</p>
+    </div>
+    <div class="col-span-2">
+        <p class="text-gray-400 text-xs">Liability limit</p>
+        <p class="text-gray-800">{{ policy.liability_limit or "—" }}</p>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow p-4 mb-4">
+    <h2 class="font-semibold text-gray-700 mb-3">Coverages</h2>
+    {% if policy.coverages %}
+    <div class="space-y-2">
+        {% for cov in policy.coverages %}
+        <div class="border rounded-lg px-3 py-2">
+            <p class="text-sm font-medium text-gray-800">{{ cov.name }}</p>
+            <p class="text-xs text-gray-400">
+                Limit: {{ cov.limit_amount or "—" }}
+                {% if cov.deductible %} · Deductible ${{ cov.deductible }}{% endif %}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-400 text-sm">No coverage lines saved yet.</p>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-xl shadow p-4 mb-4 text-sm">
+    <h2 class="font-semibold text-gray-700 mb-2">Agent</h2>
+    <p class="text-gray-800">{{ policy.agent_name or "—" }}</p>
+    <p class="text-gray-500">{{ policy.agent_phone }}</p>
+    <p class="text-gray-500">{{ policy.agent_email }}</p>
+    {% if policy.notes %}
+    <p class="text-gray-600 mt-3 whitespace-pre-wrap">{{ policy.notes }}</p>
+    {% endif %}
+</div>
+
+<form method="POST" action="/policies/{{ policy.id }}/delete"
+      onsubmit="return confirm('Delete this policy from the database?')">
+    <button class="text-red-400 text-xs underline">Delete policy</button>
+</form>
+{% endblock %}

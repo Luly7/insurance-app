@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center gap-2 mb-6">
+    <a href="/profiles/{{ member.id }}" class="text-blue-600 text-sm">← Back</a>
+    <h1 class="text-xl font-bold text-gray-800">Add Vehicle</h1>
+</div>
+<p class="text-gray-500 text-sm mb-4">Adding vehicle for <strong>{{ member.name }}</strong></p>
+<form method="POST" action="/vehicles/{{ member.id }}/add" class="space-y-4">
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <div class="grid grid-cols-3 gap-3">
+            <div>
+                <label class="text-sm text-gray-600">Year</label>
+                <input name="year" type="number" required min="1990" max="2026" value="2020"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Make</label>
+                <input name="make" type="text" required placeholder="Toyota"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Model</label>
+                <input name="model" type="text" required placeholder="RAV4"
+                    class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+        </div>
+        <div>
+            <label class="text-sm text-gray-600">Ownership</label>
+            <select name="ownership" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="owned">Owned</option>
+                <option value="financed">Financed / Leased</option>
+            </select>
+        </div>
+        <div>
+            <label class="text-sm text-gray-600">Annual Mileage</label>
+            <input name="annual_mileage" type="number" value="12000"
+                class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+        </div>
+        <div>
+            <label class="text-sm text-gray-600">Primary Use</label>
+            <select name="primary_use" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="commute">Commute</option>
+                <option value="pleasure">Pleasure</option>
+                <option value="business">Business</option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">
+        Add Vehicle
+    </button>
+</form>
+{% endblock %}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚗 Family Insurance Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <style>
+        .quote-content h1 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: #1e40af; }
+        .quote-content h2 { font-size: 1.1rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #1d4ed8; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.25rem; }
+        .quote-content h3 { font-size: 1rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.25rem; color: #374151; }
+        .quote-content table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.8rem; }
+        .quote-content th { background: #1d4ed8; color: white; padding: 0.5rem; text-align: left; }
+        .quote-content td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #e5e7eb; }
+        .quote-content tr:nth-child(even) { background: #f8fafc; }
+        .quote-content tr:hover { background: #eff6ff; }
+        .quote-content strong { color: #1e40af; font-weight: 600; }
+        .quote-content ul { list-style: disc; padding-left: 1.25rem; margin: 0.5rem 0; }
+        .quote-content li { margin-bottom: 0.25rem; }
+        .quote-content a { color: #2563eb; text-decoration: underline; }
+        .quote-content p { margin-bottom: 0.5rem; }
+        .quote-content hr { border-color: #e5e7eb; margin: 0.75rem 0; }
+        .quote-content blockquote { border-left: 3px solid #3b82f6; padding-left: 0.75rem; color: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-blue-700 text-white px-4 py-3 flex items-center justify-between shadow">
+        <a href="/" class="text-lg font-bold">🚗 Insurance Manager</a>
+        <div class="flex items-center gap-3">
+            <a href="/policies" class="text-sm font-medium text-blue-100">Policies</a>
+            <a href="/profiles/add" class="bg-white text-blue-700 text-sm font-semibold px-3 py-1 rounded-full">+ Add Member</a>
+        </div>
+    </nav>
+    <main class="max-w-2xl mx-auto px-4 py-6">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

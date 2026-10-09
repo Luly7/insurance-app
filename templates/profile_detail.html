@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center gap-2 mb-4">
+    <a href="/" class="text-blue-600 text-sm">← Back</a>
+</div>
+
+<div class="bg-white rounded-xl shadow p-4 mb-4">
+    <div class="flex justify-between items-start">
+        <div>
+            <h1 class="text-xl font-bold text-gray-800">{{ member.name }}</h1>
+            <p class="text-gray-500 text-sm">{{ member.age }}yo · {{ member.gender }} · {{ member.marital_status }}</p>
+            <p class="text-gray-500 text-sm">{{ member.city }}, UT {{ member.zip_code }}</p>
+            <p class="text-gray-400 text-xs mt-1">{{ member.coverage_type|title }} coverage · ${{ member.deductible }} deductible</p>
+        </div>
+        <a href="/profiles/{{ member.id }}/edit" class="text-blue-600 text-sm font-medium">Edit</a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow p-4 mb-4">
+    <div class="flex justify-between items-center mb-3">
+        <h2 class="font-semibold text-gray-700">Vehicles</h2>
+        <a href="/vehicles/{{ member.id }}/add" class="text-blue-600 text-sm font-medium">+ Add</a>
+    </div>
+    {% if member.vehicles %}
+    <div class="space-y-2">
+        {% for vehicle in member.vehicles %}
+        <div class="flex justify-between items-center border rounded-lg px-3 py-2">
+            <div>
+                <p class="text-sm font-medium text-gray-800">{{ vehicle.year }} {{ vehicle.make }} {{ vehicle.model }}</p>
+                <p class="text-xs text-gray-400">{{ vehicle.annual_mileage }} mi/yr · {{ vehicle.primary_use }}</p>
+            </div>
+            <form method="POST" action="/vehicles/{{ vehicle.id }}/delete">
+                <button class="text-red-400 text-xs">Remove</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-400 text-sm">No vehicles added yet.</p>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-xl shadow p-4 mb-4">
+    <div class="flex justify-between items-center mb-3">
+        <h2 class="font-semibold text-gray-700">Policies</h2>
+        <a href="/policies/add?member_id={{ member.id }}" class="text-blue-600 text-sm font-medium">+ Add</a>
+    </div>
+    {% if member.policies %}
+    <div class="space-y-2">
+        {% for policy in member.policies %}
+        <a href="/policies/{{ policy.id }}" class="flex justify-between items-center border rounded-lg px-3 py-2">
+            <div>
+                <p class="text-sm font-medium text-gray-800">{{ policy.carrier }}</p>
+                <p class="text-xs text-gray-400 capitalize">{{ policy.policy_type }} · {{ policy.status }}
+                    {% if policy.policy_number %} · #{{ policy.policy_number }}{% endif %}
+                </p>
+            </div>
+            <span class="text-blue-500">›</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-400 text-sm">No policies saved yet. Add auto, home, life, or health here.</p>
+    {% endif %}
+</div>
+
+<div class="bg-blue-50 rounded-xl shadow p-4 mb-4">
+    <h2 class="font-semibold text-gray-700 mb-2">🤖 Run Insurance Quote</h2>
+    <p class="text-gray-500 text-xs mb-3">AI agent searches 14 insurers — traditional and AI-powered.</p>
+    {% if not member.vehicles %}
+    <p class="text-orange-500 text-sm">Add a vehicle first to run a quote.</p>
+    {% else %}
+    <form method="POST" action="/quotes/{{ member.id }}/run">
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">
+            🚗 Run Quote for {{ member.name }}
+        </button>
+    </form>
+    <p class="text-gray-400 text-xs mt-2 text-center">Takes 1-2 minutes. Refresh page to see results.</p>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold text-gray-700 mb-3">Quote History</h2>
+    {% if quotes %}
+    <div class="space-y-6">
+        {% for quote in quotes %}
+        <div class="border rounded-xl overflow-hidden">
+            <div class="flex justify-between items-center px-4 py-2 bg-gray-50 border-b">
+                <p class="text-xs text-gray-400 font-medium">{{ quote.created_at.strftime("%b %d, %Y %I:%M %p") }}</p>
+                <form method="POST" action="/quotes/{{ quote.id }}/delete">
+                    <button class="text-red-400 text-xs hover:text-red-600">Delete</button>
+                </form>
+            </div>
+            <div class="p-4 overflow-x-auto" id="quote-{{ quote.id }}">
+                <div class="quote-content text-sm text-gray-700"></div>
+            </div>
+        </div>
+        <script>
+        (function() {
+            var raw = {{ quote.result | tojson }};
+            var el = document.querySelector("#quote-{{ quote.id }} .quote-content");
+            el.innerHTML = marked.parse(raw);
+        })();
+        </script>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-400 text-sm">No quotes yet. Run your first quote above.</p>
+    {% endif %}
+</div>
+
+<div class="mt-6 text-center">
+    <form method="POST" action="/profiles/{{ member.id }}/delete"
+          onsubmit="return confirm('Delete {{ member.name }}? This cannot be undone.')">
+        <button class="text-red-400 text-xs underline">Delete this profile</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Insurance policies</h1>
+        <p class="text-gray-500 text-sm">Everything stored in your insurance SQL database.</p>
+    </div>
+    <a href="/policies/add" class="bg-blue-600 text-white text-sm font-semibold px-3 py-2 rounded-full">+ Add policy</a>
+</div>
+
+{% if policies %}
+<div class="space-y-3">
+    {% for policy in policies %}
+    <a href="/policies/{{ policy.id }}" class="block bg-white rounded-xl shadow p-4 hover:shadow-md transition">
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="font-semibold text-gray-800">{{ policy.carrier }}</p>
+                <p class="text-gray-500 text-sm capitalize">{{ policy.policy_type }} · {{ policy.status }}</p>
+                <p class="text-gray-400 text-xs mt-1">
+                    {{ policy.member.name if policy.member else "No member" }}
+                    {% if policy.vehicle %} · {{ policy.vehicle.year }} {{ policy.vehicle.make }} {{ policy.vehicle.model }}{% endif %}
+                </p>
+            </div>
+            <div class="text-right">
+                {% if policy.premium_amount %}
+                <p class="font-semibold text-gray-800">${{ policy.premium_amount }}</p>
+                <p class="text-gray-400 text-xs">{{ policy.billing_cycle }}</p>
+                {% endif %}
+                {% if policy.policy_number %}
+                <p class="text-gray-400 text-xs mt-1">#{{ policy.policy_number }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-xl shadow p-8 text-center">
+    <p class="text-gray-600 font-medium mb-4">No policies in the database yet.</p>
+    <a href="/policies/add" class="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-semibold">Add first policy</a>
+</div>
+{% endif %}
+{% endblock %}
